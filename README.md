@@ -5,6 +5,7 @@ Helper lib to create light RESTful clients with node.js that keeps the original 
 
 ... Work in progress ...
 
+[![Build Status](https://travis-ci.org/intesso/rip.png)](https://travis-ci.org/intesso/rip)
 
 /*
 
@@ -16,6 +17,10 @@ API Development:
 
 // rip.define is a API definition function
 rip.define({
+	// options
+	options : {}
+	headers : {}
+
 	// function names
 	method: "GET",
 	alias: "" || ['getIndex', 'index'],
