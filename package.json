@@ -1,0 +1,27 @@
+{
+  "name": "rip",
+  "description": "Helper lib to create light RESTful clients with node.js that keep the original API in place.",
+  "version": "0.0.1",
+  "author": "Andi Neck <andi.neck@intesso.com>",
+  "contributors": [
+    {
+      "name": "Andi Neck",
+      "email": "andi.neck@intesso.com"
+    }
+  ],
+  "dependencies": {
+    "request": "~2.16.6"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "rip",
+    "RESTful",
+    "client",
+    "api"
+  ],
+  "repository": "git://github.com/intesso/rip",
+  "main": "index",
+  "engines": {
+    "node": "*"
+  }
+}
