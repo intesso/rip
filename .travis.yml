@@ -9,7 +9,7 @@ before_script:
   - "npm install"
 
 script:
-  - "node test/rip.js"
+  - "mocha test/rip.js"
 
 notifications:
   email: andi.neck@intesso.com
