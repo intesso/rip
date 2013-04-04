@@ -9,7 +9,10 @@ before_script:
   - "npm install"
 
 script:
-  - "mocha test/rip.js"
+  - "node_modules/mocha/bin/mocha"
+
+services:
+  - elasticsearch
 
 notifications:
   email: andi.neck@intesso.com
