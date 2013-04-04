@@ -87,25 +87,121 @@ describe('rip.call()', function() {
 	// 	})
 	// });
 
-	// it('should add an element of a type to the index', function(done) {
-	// 	var rip = require('../index')()
-	// 	rip.call({
-	// 		url: "http://localhost:9200/:index/:type/:id",
-	// 		method: "PUT",
-	// 		params: {index:"rip", type:"user", id:1},
-	// 		data: {user:"andi", created:"a while ago"}
+	it('should add an element of a type to the index', function(done) {
+		var rip = require('../index')()
+		rip.call({
+			url: "http://localhost:9200/:index/:type/:id",
+			method: "PUT",
+			params: {
+				index: "rip",
+				type: "user",
+				id: 1
+			},
+			data: {
+				user: "andi",
+				created: "a while ago"
+			}
 
-	// 	}, function(err, result) {
-	// 		console.log("call result: " + result);
-	// 		result = JSON.parse(result);
-	// 		assert.equal(true, result.ok);
-	// 		assert(result.indices);
-	// 		done();
-	// 	})
-	// });
-	
+		}, function(err, result) {
+			console.log("call result: " + result);
+			result = JSON.parse(result);
+			assert.equal(true, result.ok);
+			assert.equal("rip", result._index);
+			assert.equal("user", result._type);
+			assert.equal(1, result._id);
+			done();
+		})
+	});
+
+	it('should find the user andi', function(done) {
+		var rip = require('../index')()
+		rip.call({
+			url: "http://localhost:9200/rip/user/_search?q=user:user&pretty=true",
+			params: {
+				user: ":andi"
+			}
+		}, function(err, result) {
+			console.log("call result: " + result);
+			result = JSON.parse(result);
+			done();
+		})
+	});
+
+
+	it('should add an element of a type to the index', function(done) {
+		var rip = require('../index')()
+		rip.call({
+			url: "http://localhost:9200/rip/user/_search?pretty=true",
+			data: {
+				"query": {
+					"term": {
+						"user": ":user"
+					}
+				}
+			},
+			params: {
+				user: "andi"
+			}
+		}, function(err, result) {
+			console.log("call result search andi: " + result);
+			result = JSON.parse(result);
+			done();
+		})
+	});
+
+
+	it('should replace the params in the data object', function() {
+		var opts = {
+			data: {
+				"query": {
+					"term": {
+						"user": ":user"
+					}
+				}
+			},
+			params: {
+				user: "bobby"
+			}
+		}
+
+
+		var PARAMS_PATTERN = /(:|\*)\w+/gm;
+		var ERROR_MISSING_PARAMETER = "ERROR_MISSING_PARAMETER";
+
+		var d = JSON.stringify(opts.data);
+		console.log("DATA: ", d, opts.params);
+		console.log("MATCH: ", d.match(PARAMS_PATTERN));
+		console.log("EXEC: ", PARAMS_PATTERN.exec(d));
+		var data = resolveParams(d, opts.params);
+
+		console.log("RESOLVED_DATA ", data);
+		assert(data);
+		assert(data.indexOf("bobby") > -1);
+
+
+		function resolveParams(str, params) {
+			// begins with * or : and ends where the word ends
+			var result = str;
+			if (!params || !str || !str.length) return null;
+			var variables = str.match(PARAMS_PATTERN);
+			console.log("VARIABLES ", variables, str, typeof str);
+			if (!variables) return null;
+			for (var i in variables) {
+				var name = variables[i].substring(1);
+				var type = variables[i].charAt(0);
+				var mandatory = (type == ':');
+				if (params[name]) {
+					result = result.replace(variables[i], params[name]);
+				} else if (mandatory) {
+					result = result.replace(variables[i], variables[i] + '-' + ERROR_MISSING_PARAMETER);
+				}
+			}
+			return result;
+		}
+
+	});
+
 });
-
 
 // it('should work too', function(done) {
 // 	var url = require('url')
