@@ -1,5 +1,5 @@
-rip
-===
+#rip
+
 
 Helper lib to create light RESTful clients with node.js that keeps the original API in place.
 
@@ -9,10 +9,10 @@ Helper lib to create light RESTful clients with node.js that keeps the original 
 
 /*
 
-API Development:
+API:
 
-// url segments that start with a colon (:) get replaced with the matching params property 
-// * at the end of the property or an url segment means: optional property
+// url segments that start with a colon (:) or star (*) get replaced with the matching params property 
+// 
 // params, querystring and data properties can be object literals or string in the form of querystring: http://nodejs.org/api/querystring.html
 
 // rip.define is a API definition function
@@ -28,7 +28,7 @@ rip.define({
 	
 	// key:values
 	params: "" || {}
-	querystring: "" || {},
+	query: "" || {},
 	data: "" || {},
 	
 	// description

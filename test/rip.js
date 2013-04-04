@@ -123,6 +123,23 @@ describe('rip.call()', function() {
 		}, function(err, result) {
 			console.log("call result: " + result);
 			result = JSON.parse(result);
+			assert(result.hits.total > 0);
+			done();
+		})
+	});
+
+	it('should find the user andi via query', function(done) {
+		var rip = require('../index')()
+		rip.call({
+			url: "http://localhost:9200/rip/user/_search",
+			query: {q: "user:user", pretty:true },
+			params: {
+				user: ":andi"
+			}
+		}, function(err, result) {
+			console.log("call result via query: " + result);
+			result = JSON.parse(result);
+			assert(result.hits.total > 0);
 			done();
 		})
 	});
@@ -145,6 +162,7 @@ describe('rip.call()', function() {
 		}, function(err, result) {
 			console.log("call result search andi: " + result);
 			result = JSON.parse(result);
+			assert(result.hits.total > 0);
 			done();
 		})
 	});
