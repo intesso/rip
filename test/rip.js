@@ -132,7 +132,10 @@ describe('rip.call()', function() {
 		var rip = require('../index')()
 		rip.call({
 			url: "http://localhost:9200/rip/user/_search",
-			query: {q: "user:user", pretty:true },
+			query: {
+				q: "user:user",
+				pretty: true
+			},
 			params: {
 				user: ":andi"
 			}
@@ -273,3 +276,140 @@ describe('rip.call()', function() {
 // 		}
 // 	}
 // });
+
+
+describe('rip.define()', function() {
+	it('should define the function correctly and it should be callable', function(done) {
+		var rip = require('../index')({
+			options: {
+				port: 9200
+			}
+		})
+		rip.define({
+			name: "getStatus",
+			method: "GET",
+			url: "/_status?pretty=true",
+			docOriginal: "http://www.elasticsearch.org/guide/reference/api/admin-indices-status/",
+			docApi: ""
+		});
+		assert(rip.getStatus);
+		assert(typeof rip.getStatus == 'function');
+		assert(rip.api.getStatus);
+		assert(rip.api.getStatus.name);
+		assert(rip.api.getStatus.urlObj);
+		assert.equal(rip.api.getStatus.urlObj.pathname, "/_status");
+
+		var async = require('async');
+
+		// call the function with different signatures.
+		async.parallel([
+
+		function(callback) {
+			rip.getStatus({}, function(err, result) {
+				result = JSON.parse(result);
+				console.log("getStatus RESULT: ", result);
+				assert(result.indices.rip);
+				callback();
+			})
+		},
+
+		function(callback) {
+			rip.getStatus(null, null, function(err, result) {
+				result = JSON.parse(result);
+				console.log("getStatus RESULT: ", result);
+				assert(result.indices.rip);
+				callback();
+			})
+		},
+
+		function(callback) {
+			rip.getStatus(function(err, result) {
+				result = JSON.parse(result);
+				console.log("getStatus RESULT: ", result);
+				assert(result.indices.rip);
+				callback();
+			})
+		},
+
+
+		],
+		// optional callback
+
+		function(err, results) {
+			// results is now equal to ['one', 'two']
+			assert(results.length == 3);
+			done();
+		});
+
+	});
+});
+
+
+describe('rip.define()', function() {
+	it('should define the function correctly and it should be callable', function(done) {
+		var rip = require('../index')({
+			options: {
+				port: 9200
+			}
+		})
+		rip.define({
+			name: "insertEntry",
+			url: "/:index/:type/:id",
+			method: "PUT",
+			data: {
+				user: "andi",
+				created: "a while ago"
+			}
+		});
+		var async = require('async');
+
+		// call the function with different signatures.
+		async.series([
+
+		function(callback) {
+			rip.insertEntry({
+				index: "rip",
+				type: "user",
+				id: 1
+			}, {
+				user: "andy",
+				created: "in the past"
+			}, function(err, result) {
+				result = JSON.parse(result);
+				console.log("getStatus RESULT: ", result);
+				assert.equal(true, result.ok);
+				assert.equal("rip", result._index);
+				assert.equal(1, result._id);
+				callback();
+			})
+		},
+
+		function(callback) {
+			rip.insertEntry({
+				index: "rip",
+				type: "user",
+				id: 2
+			}, {
+				user: "iris",
+				created: "just now"
+			}, function(err, result) {
+				result = JSON.parse(result);
+				console.log("getStatus RESULT: ", result);
+				assert.equal(true, result.ok);
+				assert.equal("rip", result._index);
+				assert.equal(2, result._id);
+				callback();
+			})
+		}
+		],
+		// optional callback
+
+		function(err, results) {
+			// results is now equal to ['one', 'two']
+			assert(results.length == 2);
+			done();
+		});
+
+
+	});
+});

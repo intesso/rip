@@ -10,10 +10,12 @@
     }
   ],
   "dependencies": {
-    "request": "~2.16.6"
+    "request": "~2.16.6",
+    "underscore": "~1.4.4"
   },
   "devDependencies": {
-    "mocha": "~1.8.2"
+    "mocha": "~1.8.2",
+    "async": "~0.2.6"
   },
   "keywords": [
     "rip",
