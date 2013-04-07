@@ -87,7 +87,7 @@ describe('rip.call()', function() {
 	// 	})
 	// });
 
-	it ('should add an element of a type to an index and it should be found afterwards', function(done) {
+	it('should add an element of a type to an index and it should be found afterwards', function(done) {
 		var async = require('async');
 
 		// call the function with different signatures.
@@ -123,19 +123,23 @@ describe('rip.call()', function() {
 
 		// it('should find the user andi'
 
+
 		function(callback) {
-			var rip = require('../index')()
-			rip.call({
-				url: "http://localhost:9200/rip/user/_search?q=user:user&pretty=true",
-				params: {
-					user: ":andi"
-				}
-			}, function(err, result) {
-				console.log("call result: " + result);
-				result = JSON.parse(result);
-				assert(result.hits.total > 0);
-				callback();
-			});
+			setTimeout(
+			function() {
+				var rip = require('../index')()
+				rip.call({
+					url: "http://localhost:9200/rip/user/_search?q=user:user&pretty=true",
+					params: {
+						user: ":andi"
+					}
+				}, function(err, result) {
+					console.log("call result: " + result);
+					result = JSON.parse(result);
+					assert(result.hits.total > 0);
+					callback();
+				});
+			}, 1000);
 		},
 
 		// it('should find the user andi via query'
