@@ -87,88 +87,131 @@ describe('rip.call()', function() {
 	// 	})
 	// });
 
-	it('should add an element of a type to the index', function(done) {
-		var rip = require('../index')()
-		rip.call({
-			url: "http://localhost:9200/:index/:type/:id",
-			method: "PUT",
-			params: {
-				index: "rip",
-				type: "user",
-				id: 1
-			},
-			data: {
-				user: "andi",
-				created: "a while ago"
-			}
+	it ('should add an element of a type to an index and it should be found afterwards', function(done) {
+		var async = require('async');
 
-		}, function(err, result) {
-			console.log("call result: " + result);
-			result = JSON.parse(result);
-			assert.equal(true, result.ok);
-			assert.equal("rip", result._index);
-			assert.equal("user", result._type);
-			assert.equal(1, result._id);
-			done();
-		})
-	});
+		// call the function with different signatures.
+		async.series([
 
-	it('should find the user andi', function(done) {
-		var rip = require('../index')()
-		rip.call({
-			url: "http://localhost:9200/rip/user/_search?q=user:user&pretty=true",
-			params: {
-				user: ":andi"
-			}
-		}, function(err, result) {
-			console.log("call result: " + result);
-			result = JSON.parse(result);
-			assert(result.hits.total > 0);
-			done();
-		})
-	});
+		// it('should add an element of a type to the index'
 
-	it('should find the user andi via query', function(done) {
-		var rip = require('../index')()
-		rip.call({
-			url: "http://localhost:9200/rip/user/_search",
-			query: {
-				q: "user:user",
-				pretty: true
-			},
-			params: {
-				user: ":andi"
-			}
-		}, function(err, result) {
-			console.log("call result via query: " + result);
-			result = JSON.parse(result);
-			assert(result.hits.total > 0);
-			done();
-		})
-	});
-
-
-	it('should add an element of a type to the index', function(done) {
-		var rip = require('../index')()
-		rip.call({
-			url: "http://localhost:9200/rip/user/_search?pretty=true",
-			data: {
-				"query": {
-					"term": {
-						"user": ":user"
-					}
+		function(callback) {
+			var rip = require('../index')()
+			rip.call({
+				url: "http://localhost:9200/:index/:type/:id",
+				method: "PUT",
+				params: {
+					index: "rip",
+					type: "user",
+					id: 1
+				},
+				data: {
+					user: "andi",
+					created: "a while ago"
 				}
-			},
-			params: {
-				user: "andi"
-			}
-		}, function(err, result) {
-			console.log("call result search andi: " + result);
-			result = JSON.parse(result);
-			assert(result.hits.total > 0);
+
+			}, function(err, result) {
+				console.log("call result: " + result);
+				result = JSON.parse(result);
+				assert.equal(true, result.ok);
+				assert.equal("rip", result._index);
+				assert.equal("user", result._type);
+				assert.equal(1, result._id);
+				callback();
+			});
+		},
+
+		// it('should find the user andi'
+
+		function(callback) {
+			var rip = require('../index')()
+			rip.call({
+				url: "http://localhost:9200/rip/user/_search?q=user:user&pretty=true",
+				params: {
+					user: ":andi"
+				}
+			}, function(err, result) {
+				console.log("call result: " + result);
+				result = JSON.parse(result);
+				assert(result.hits.total > 0);
+				callback();
+			});
+		},
+
+		// it('should find the user andi via query'
+
+		function(callback) {
+			var rip = require('../index')()
+			rip.call({
+				url: "http://localhost:9200/rip/user/_search",
+				query: {
+					q: "user:user",
+					pretty: true
+				},
+				params: {
+					user: ":andi"
+				}
+			}, function(err, result) {
+				console.log("call result via query: " + result);
+				result = JSON.parse(result);
+				assert(result.hits.total > 0);
+				callback();
+			})
+		},
+
+		// it('should find the user andi via query'
+
+		function(callback) {
+			var rip = require('../index')()
+			rip.call({
+				url: "http://localhost:9200/rip/user/_search",
+				query: {
+					q: "user:user",
+					pretty: true
+				},
+				params: {
+					user: ":andi"
+				}
+			}, function(err, result) {
+				console.log("call result via query: " + result);
+				result = JSON.parse(result);
+				assert(result.hits.total > 0);
+				callback();
+			})
+		},
+
+		// it('should find the user andi via data query'
+
+		function(callback) {
+			var rip = require('../index')()
+			rip.call({
+				url: "http://localhost:9200/rip/user/_search?pretty=true",
+				data: {
+					"query": {
+						"term": {
+							"user": ":user"
+						}
+					}
+				},
+				params: {
+					user: "andi"
+				}
+			}, function(err, result) {
+				console.log("call result search andi: " + result);
+				result = JSON.parse(result);
+				assert(result.hits.total > 0);
+				callback();
+			});
+		}],
+		// async callback
+
+		function(err, results) {
+			// results is now equal to ['one', 'two']
+			assert.equal(results.length, 5);
 			done();
-		})
+		});
 	});
+
 
 
 	it('should replace the params in the data object', function() {
@@ -333,7 +376,7 @@ describe('rip.define()', function() {
 
 
 		],
-		// optional callback
+		// async callback
 
 		function(err, results) {
 			// results is now equal to ['one', 'two']
@@ -400,13 +443,12 @@ describe('rip.define()', function() {
 				assert.equal(2, result._id);
 				callback();
 			})
-		}
-		],
-		// optional callback
+		}],
+		// async callback
 
 		function(err, results) {
 			// results is now equal to ['one', 'two']
-			assert(results.length == 2);
+			assert.equal(results.length, 2);
 			done();
 		});
 
